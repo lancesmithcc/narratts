@@ -1,0 +1,1 @@
+"""Bundled NarraTTS web assets."""

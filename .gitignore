@@ -1,0 +1,50 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+certs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+dist/
+build/
+
+# NarraTTS runtime data
+.narratts/
+voices/
+service_outputs/
+service_samples/
+*.log
+
+# Local/generated media and design sources
+*.wav
+*.mp3
+*.MP3
+*.flac
+*.m4a
+*.aac
+*.opus
+*.ogg
+raven.glb
+service/static/assets/caw.mp3
+service/static/assets/raven-mascot.glb
+service/static/assets/raven-rigged.glb
+
+# Machine-specific setup and source-asset preparation
+scripts/setup-narra-tts.sh
+tools/prepare_raven_mascot.py
+tools/rig_raven_mascot.py
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/

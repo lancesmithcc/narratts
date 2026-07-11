@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NarraTTS</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231d1913'/><path d='M6 16h2.5v-5h2.5v10h2.5V8h2.5v16h2.5V11h2.5v10h2.5v-5H26' stroke='%23f0b352' stroke-width='2' fill='none' stroke-linecap='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css?v=10">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo-mark" viewBox="0 0 240 200">
+      <g stroke-linecap="round" stroke-width="6" stroke="currentColor" fill="none">
+        <line x1="8"   y1="80.2" x2="8"   y2="119.8"/><line x1="18"  y1="68.5" x2="18"  y2="131.5"/>
+        <line x1="28"  y1="56.8" x2="28"  y2="143.2"/><line x1="38"  y1="44.2" x2="38"  y2="155.8"/>
+        <line x1="48"  y1="29.8" x2="48"  y2="170.2"/><line x1="58"  y1="23.5" x2="58"  y2="176.5"/>
+        <line x1="68"  y1="17.2" x2="68"  y2="182.8"/><line x1="78"  y1="11.8" x2="78"  y2="188.2"/>
+        <line x1="88"  y1="15.4" x2="88"  y2="184.6"/><line x1="98"  y1="20.8" x2="98"  y2="179.2"/>
+        <line x1="108" y1="26.2" x2="108" y2="173.8"/><line x1="118" y1="32.5" x2="118" y2="167.5"/>
+        <line x1="128" y1="38.8" x2="128" y2="161.2"/><line x1="138" y1="35.2" x2="138" y2="164.8"/>
+        <line x1="148" y1="28"   x2="148" y2="172"/><line x1="158" y1="20.8" x2="158" y2="179.2"/>
+        <line x1="168" y1="14.5" x2="168" y2="185.5"/><line x1="178" y1="11.8" x2="178" y2="188.2"/>
+        <line x1="188" y1="17.2" x2="188" y2="182.8"/><line x1="198" y1="23.5" x2="198" y2="176.5"/>
+        <line x1="208" y1="29.8" x2="208" y2="170.2"/><line x1="218" y1="41.5" x2="218" y2="158.5"/>
+        <line x1="228" y1="59.5" x2="228" y2="140.5"/><line x1="238" y1="74.8" x2="238" y2="125.2"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<svg class="watermark" aria-hidden="true"><use href="#logo-mark"/></svg>
+<canvas id="swarm" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="wordmark">
+    <svg class="wordmark-glyph" viewBox="0 0 64 48" aria-hidden="true">
+      <g stroke-linecap="round" stroke-width="5" stroke="currentColor" fill="none">
+        <line x1="5"  y1="17.5" x2="5"  y2="30.5"/><line x1="14" y1="11"   x2="14" y2="37"/>
+        <line x1="23" y1="4"    x2="23" y2="44"/><line x1="32" y1="9"    x2="32" y2="39"/>
+        <line x1="41" y1="6"    x2="41" y2="42"/><line x1="50" y1="13"   x2="50" y2="35"/>
+        <line x1="59" y1="18.5" x2="59" y2="29.5"/>
+      </g>
+    </svg>
+    <span class="wordmark-text">Narra<b>TTS</b></span>
+  </div>
+  <div class="topbar-status" id="health-status" title="Service status">
+    <span class="status-dot" id="status-dot"></span>
+    <span class="status-text" id="status-text">connecting</span>
+  </div>
+  <button class="key-btn" id="key-btn" type="button" title="API key">key</button>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <button class="rail-item active" data-view="generate" type="button">Generate</button>
+    <button class="rail-item" data-view="clone" type="button">Clone</button>
+    <button class="rail-item" data-view="voices" type="button">Voices</button>
+    <button class="rail-item" data-view="docs" type="button">API&nbsp;Docs</button>
+
+    <aside class="raven-dock" aria-label="Narra raven mascot">
+      <button class="raven-stage" id="raven-stage" type="button" aria-label="Wake the Narra raven">
+        <span class="raven-aura" aria-hidden="true"></span>
+        <canvas id="raven-canvas" aria-hidden="true"></canvas>
+        <span class="raven-status" id="raven-status" aria-live="polite">listening</span>
+      </button>
+    </aside>
+  </nav>
+
+  <main class="content">
+
+    <!-- ── GENERATE ─────────────────────────────────────── -->
+    <section class="view active" id="view-generate">
+      <div class="hero">
+        <p class="eyebrow">Local inference · nothing leaves this machine</p>
+        <h1>Say it in any voice.</h1>
+      </div>
+
+      <div class="mode-switch" role="tablist" aria-label="Generation mode">
+        <button class="mode-tab active" data-mode="speaker" role="tab" aria-selected="true" type="button">Built-in speaker</button>
+        <button class="mode-tab" data-mode="design" role="tab" aria-selected="false" type="button">Voice design</button>
+        <button class="mode-tab" data-mode="library" role="tab" aria-selected="false" type="button">My voices</button>
+      </div>
+
+      <form id="gen-form" class="panel">
+        <label class="field">
+          <span class="field-label">Text <span class="char-count" id="gen-count">0 / 2000</span></span>
+          <textarea id="gen-text" rows="5" maxlength="2000" placeholder="Type what you want spoken…" required></textarea>
+        </label>
+
+        <div class="field-row" id="speaker-fields">
+          <label class="field grow">
+            <span class="field-label">Speaker</span>
+            <select id="gen-speaker"><option value="">loading…</option></select>
+          </label>
+          <label class="field grow">
+            <span class="field-label">Style instruction <i>optional</i></span>
+            <input id="gen-instruct-opt" type="text" placeholder="e.g. whisper it, sound excited">
+          </label>
+        </div>
+
+        <div class="field-col hidden" id="design-fields">
+          <label class="field">
+            <span class="field-label">Describe the voice</span>
+            <input id="gen-instruct" type="text" minlength="5" maxlength="500"
+              placeholder="A middle-aged Scottish man, deep and gravelly, unhurried">
+          </label>
+          <div class="chip-row" id="design-examples"></div>
+        </div>
+
+        <div class="field-col hidden" id="library-fields">
+          <div class="field">
+            <span class="field-label">Speak as <span class="muted" id="gen-picked-count">0 selected · blend up to 5</span></span>
+            <div class="voice-picker" id="gen-picker">
+              <p class="empty-line">No voices yet. Add one in the Voices tab.</p>
+            </div>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">Model</span>
+              <select id="gen-clone-model">
+                <option value="base-1.7b">base-1.7b · quality</option>
+                <option value="base-0.6b">base-0.6b · fast</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Language</span>
+            <select id="gen-language"></select>
+          </label>
+          <div class="grow"></div>
+          <button class="btn-primary" id="gen-submit" type="submit">Generate speech</button>
+        </div>
+      </form>
+
+      <div id="gen-results" class="results" aria-live="polite"></div>
+    </section>
+
+    <!-- ── CLONE ────────────────────────────────────────── -->
+    <section class="view" id="view-clone">
+      <div class="hero">
+        <p class="eyebrow">Record or upload a reference · then make it speak</p>
+        <h1>Borrow a voice.</h1>
+      </div>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload a reference voice">
+        <p><b>Drop audio here</b> or click to choose a file</p>
+        <p class="muted">Ten clean seconds beat a noisy minute. One speaker, no music.</p>
+        <input type="file" id="file-input" accept=".wav,.mp3,.flac,.ogg,.m4a,audio/*" hidden>
+      </div>
+
+      <div class="rec-row">
+        <button class="btn-ghost" id="rec-btn" type="button">
+          <span class="rec-dot" aria-hidden="true"></span>&nbsp;Record with microphone
+        </button>
+        <span class="rec-live hidden" id="rec-live">
+          <span class="rec-dot pulsing" aria-hidden="true"></span>
+          <span id="rec-time">0:00</span>
+        </span>
+        <button class="btn-primary hidden" id="rec-stop" type="button">Stop &amp; use</button>
+        <button class="btn-ghost hidden" id="rec-cancel" type="button">Discard</button>
+      </div>
+
+      <div id="upload-meta" class="panel hidden">
+        <p class="field-label" id="upload-filename"></p>
+        <div class="field-row">
+          <label class="field grow">
+            <span class="field-label">Name</span>
+            <input id="upload-name" type="text" placeholder="e.g. Warm narrator">
+          </label>
+          <label class="field">
+            <span class="field-label">Language</span>
+            <select id="upload-language"></select>
+          </label>
+        </div>
+        <p class="muted">The transcript is written for you: new voices are auto-transcribed with Whisper.</p>
+        <div class="field-row">
+          <div class="grow"></div>
+          <button class="btn-ghost" id="upload-cancel" type="button">Cancel</button>
+          <button class="btn-primary" id="upload-confirm" type="button">Add to library</button>
+        </div>
+      </div>
+
+      <form id="clone-form" class="panel">
+        <div class="field">
+          <span class="field-label">Reference voices <span class="muted" id="clone-picked-count">0 selected</span></span>
+          <div class="voice-picker" id="clone-picker">
+            <p class="empty-line">No voices yet. Record or upload one above.</p>
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Text <span class="char-count" id="clone-count">0 / 2000</span></span>
+          <textarea id="clone-text" rows="5" maxlength="2000" placeholder="What should this voice say?" required></textarea>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Model</span>
+            <select id="clone-model">
+              <option value="base-1.7b">base-1.7b · quality</option>
+              <option value="base-0.6b">base-0.6b · fast</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Language</span>
+            <select id="clone-language"></select>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="clone-xvec" checked>
+            <span>Embedding only <i>no transcript needed</i></span>
+          </label>
+          <div class="grow"></div>
+          <button class="btn-primary" type="submit">Clone &amp; speak</button>
+        </div>
+      </form>
+
+      <div id="clone-results" class="results" aria-live="polite"></div>
+    </section>
+
+    <!-- ── VOICES ───────────────────────────────────────── -->
+    <section class="view" id="view-voices">
+      <div class="hero">
+        <p class="eyebrow">Reference library · rename, retag, transcribe, delete</p>
+        <h1>Your voices.</h1>
+      </div>
+
+      <div id="voice-list" class="voice-list"></div>
+    </section>
+
+    <!-- ── DOCS ─────────────────────────────────────────── -->
+    <section class="view" id="view-docs">
+      <div class="hero">
+        <p class="eyebrow">REST API · Bearer auth · port 8765</p>
+        <h1>Wire it up.</h1>
+      </div>
+
+      <div class="docs-intro panel">
+        <p>Every endpoint takes <code>Authorization: Bearer &lt;TTS_API_KEY&gt;</code>.
+        Keys come from the <code>TTS_API_KEYS</code> env var (comma-separated).
+        Machine-readable specs:
+        <a href="/docs" target="_blank" rel="noopener">Swagger</a> ·
+        <a href="/redoc" target="_blank" rel="noopener">ReDoc</a> ·
+        <a href="/openapi.json" target="_blank" rel="noopener">openapi.json</a> ·
+        <a href="/llms.txt" target="_blank" rel="noopener">llms.txt</a></p>
+      </div>
+
+      <div id="docs-list"></div>
+
+      <h2 class="docs-h2">Models</h2>
+      <table class="docs-table">
+        <thead><tr><th>Model key</th><th>Purpose</th><th>Size</th></tr></thead>
+        <tbody>
+          <tr><td><code>base-1.7b</code></td><td>Voice clone, higher quality (default)</td><td>2B</td></tr>
+          <tr><td><code>base-0.6b</code></td><td>Voice clone, faster</td><td>0.9B</td></tr>
+          <tr><td><code>voicedesign-1.7b</code></td><td>Voice from a text description</td><td>2B</td></tr>
+          <tr><td><code>customvoice-0.6b</code></td><td>Built-in speaker presets</td><td>0.9B</td></tr>
+          <tr><td><code>customvoice-1.7b</code></td><td>Built-in presets, larger</td><td>2B</td></tr>
+        </tbody>
+      </table>
+      <p class="muted docs-note">One model stays warm at a time; switching models costs a 10–20&nbsp;s swap on first request.</p>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- API key dialog -->
+<div class="scrim hidden" id="key-scrim">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="key-title">
+    <h2 id="key-title">API key</h2>
+    <p class="muted">Stored in this browser only. Sent as a Bearer token with every request.</p>
+    <input type="password" id="key-input" autocomplete="off" placeholder="Paste your configured API key">
+    <div class="field-row">
+      <div class="grow"></div>
+      <button class="btn-ghost" id="key-cancel" type="button">Cancel</button>
+      <button class="btn-primary" id="key-save" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script src="swarm.js?v=8"></script>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.2/+esm","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/"}}
+</script>
+<script type="module" src="raven.js?v=23"></script>
+<script src="app.js?v=9"></script>
+</body>
+</html>

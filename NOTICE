@@ -1,0 +1,9 @@
+NarraTTS
+Copyright 2026 Lance Smith
+
+This product uses Qwen3-TTS software and model weights from the Qwen team.
+Qwen3-TTS is licensed under the Apache License 2.0. Model downloads remain
+subject to the license and terms published with each selected model.
+
+The browser interface loads Three.js from jsDelivr and Space Grotesk from
+Google Fonts. Their respective licenses and service terms apply.

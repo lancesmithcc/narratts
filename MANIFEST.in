@@ -1,0 +1,7 @@
+recursive-include service/static *.html *.css *.js
+include service/static/assets/narra-raven.glb
+recursive-include service/docs *.md
+recursive-include docs *.md
+include README.md LICENSE NOTICE SECURITY.md CONTRIBUTING.md PRODUCT.md DESIGN.md
+include .env.example Dockerfile compose.yaml Makefile
+include tools/build_narra_raven.py
