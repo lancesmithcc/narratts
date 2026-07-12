@@ -119,7 +119,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Qwen3-TTS API",
-    version="1.0.0",
+    version="1.0.1",
     description=(
         "Local Qwen3-TTS inference service. "
         "Supports voice cloning, voice design, custom voices, "
@@ -164,7 +164,7 @@ async def root():
 async def api_root():
     return {
         "service": "qwen3-tts-api",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "ui": "/ui/",
         "docs": "/docs",
         "llms_txt": "/llms.txt",
@@ -485,7 +485,7 @@ async def llms_txt():
     return {
         "name": "qwen3-tts-api",
         "description": "Local Qwen3-TTS text-to-speech inference service.",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "web_ui": "/ui/",
         "auth": "Bearer token in Authorization header. TTS_API_KEYS env var (comma-separated).",
         "endpoints": {

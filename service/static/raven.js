@@ -151,10 +151,10 @@ new ResizeObserver(resize).observe(stage);
 resize();
 
 new GLTFLoader().load(
-  "assets/narra-raven.glb?v=1",
+  "assets/raven-rigged.glb?v=2",
   (gltf) => {
     model = gltf.scene;
-    if (!model.getObjectByName("RAVEN_ROOT")) throw new Error("RAVEN_ROOT missing from narra-raven.glb");
+    if (!model.getObjectByName("NarraRaven")) throw new Error("NarraRaven missing from raven-rigged.glb");
     danceRig.add(model);
     wingPosBone = model.getObjectByName("Wing_PosZ");
     wingNegBone = model.getObjectByName("Wing_NegZ");

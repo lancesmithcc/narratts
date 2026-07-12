@@ -37,7 +37,6 @@ service_samples/
 raven.glb
 service/static/assets/caw.mp3
 service/static/assets/raven-mascot.glb
-service/static/assets/raven-rigged.glb
 
 # Machine-specific setup and source-asset preparation
 scripts/setup-narra-tts.sh

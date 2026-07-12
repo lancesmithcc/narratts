@@ -16,14 +16,13 @@ __pycache__
 *.opus
 *.ogg
 *.glb
-!service/static/assets/narra-raven.glb
+!service/static/assets/raven-rigged.glb
 certs
 voices
 service_outputs
 service_samples
 service/static/assets/caw.mp3
 service/static/assets/raven-mascot.glb
-service/static/assets/raven-rigged.glb
 tests
 dist
 build
